@@ -6,6 +6,16 @@ package com.wangdong.weathernow.model;
  * Description:this is City
  */
 public class City {
+    @Override
+    public String toString() {
+        return "City{" +
+                "id=" + id +
+                ", cityName='" + cityName + '\'' +
+                ", cityCode='" + cityCode + '\'' +
+                ", provinceId=" + provinceId +
+                '}';
+    }
+
     private int id;
     private String cityName;
     private String cityCode;

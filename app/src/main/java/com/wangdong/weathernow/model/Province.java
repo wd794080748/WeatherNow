@@ -32,6 +32,15 @@ public class Province {
         return provinceName;
     }
 
+    @Override
+    public String toString() {
+        return "Province{" +
+                "id=" + id +
+                ", provinceName='" + provinceName + '\'' +
+                ", provinceCode='" + provinceCode + '\'' +
+                '}';
+    }
+
     public String getProvinceCode() {
         return provinceCode;
     }

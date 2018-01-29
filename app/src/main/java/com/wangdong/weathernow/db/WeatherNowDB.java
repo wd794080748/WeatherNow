@@ -65,7 +65,7 @@ public class WeatherNowDB {
     public List<Province> loadProvinces() {
         ArrayList<Province> provincesList = new ArrayList<>();
         Cursor cursor = db.query("Province", null, null, null, null, null, null);
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             do {
                 Province province = new Province();
                 province.setId(cursor.getInt(cursor.getColumnIndex("id")));
@@ -74,7 +74,7 @@ public class WeatherNowDB {
                 provincesList.add(province);
             } while (cursor.moveToNext());
         }
-        if(cursor!=null){
+        if (cursor != null) {
             cursor.close();
         }
         return provincesList;
@@ -86,9 +86,9 @@ public class WeatherNowDB {
     public void saveCity(City city) {
         if (city != null) {
             ContentValues values = new ContentValues();
-            values.put("city_name", city.getCityCode());
-            values.put("city_code", city.getCityName());
-            values.put("province_id",city.getProvinceId());
+            values.put("city_name", city.getCityName());
+            values.put("city_code", city.getCityCode());
+            values.put("province_id", city.getProvinceId());
             db.insert("City", null, values);
         }
     }
@@ -99,15 +99,17 @@ public class WeatherNowDB {
     public List<City> loadCity(int provinceId) {
         ArrayList<City> cityList = new ArrayList<>();
         Cursor cursor = db.query("City", null, "province_id= ?", new String[]{String.valueOf(provinceId)}, null, null, null);
-        do {
-            City city = new City();
-            city.setId(cursor.getInt(cursor.getColumnIndex("id")));
-            city.setCityCode(cursor.getString(cursor.getColumnIndex("city_code")));
-            city.setCityName(cursor.getString(cursor.getColumnIndex("city_name")));
-            city.setProvinceId(provinceId);
-            cityList.add(city);
-        } while (cursor.moveToNext());
-        if(cursor!=null){
+        if (cursor.moveToFirst()) {
+            do {
+                City city = new City();
+                city.setId(cursor.getInt(cursor.getColumnIndex("id")));
+                city.setCityCode(cursor.getString(cursor.getColumnIndex("city_code")));
+                city.setCityName(cursor.getString(cursor.getColumnIndex("city_name")));
+                city.setProvinceId(provinceId);
+                cityList.add(city);
+            } while (cursor.moveToNext());
+        }
+        if (cursor != null) {
             cursor.close();
         }
         return cityList;
@@ -121,7 +123,7 @@ public class WeatherNowDB {
             ContentValues values = new ContentValues();
             values.put("county_name", county.getCountryName());
             values.put("county_code", county.getCountryCode());
-            values.put("city_id",county.getCityId());
+            values.put("city_id", county.getCityId());
             db.insert("County", null, values);
         }
     }
@@ -140,7 +142,7 @@ public class WeatherNowDB {
             county.setCityId(cityId);
             countyList.add(county);
         } while (cursor.moveToNext());
-        if(cursor!=null){
+        if (cursor != null) {
             cursor.close();
         }
         return countyList;
