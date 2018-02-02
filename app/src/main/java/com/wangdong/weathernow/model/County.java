@@ -7,8 +7,8 @@ package com.wangdong.weathernow.model;
  */
 public class County {
     private int id;
-    private String countryName;
-    private String countryCode;
+    private String countyName;
+    private String countyCode;
     private int cityId;
 
     public void setCityId(int cityId) {
@@ -25,12 +25,12 @@ public class County {
         this.id = id;
     }
 
-    public void setCountryName(String countryName) {
-        this.countryName = countryName;
+    public void setCountyName(String countyName) {
+        this.countyName = countyName;
     }
 
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
+    public void setCountyCode(String countyCode) {
+        this.countyCode = countyCode;
     }
 
     public int getId() {
@@ -38,12 +38,21 @@ public class County {
         return id;
     }
 
-    public String getCountryName() {
-        return countryName;
+    public String getCountyName() {
+        return countyName;
     }
 
-    public String getCountryCode() {
-        return countryCode;
+    public String getCounyCode() {
+        return countyCode;
     }
 
+    @Override
+    public String toString() {
+        return "County{" +
+                "id=" + id +
+                ", countyName='" + countyName + '\'' +
+                ", countyCode='" + countyCode + '\'' +
+                ", cityId=" + cityId +
+                '}';
+    }
 }

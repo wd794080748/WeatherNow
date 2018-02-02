@@ -1,5 +1,9 @@
 package com.wangdong.weathernow.activity;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -26,7 +30,7 @@ import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChooseAreaActivity extends AppCompatActivity {
+public class ChooseAreaActivity extends Activity {
     public static final int LEVEL_PROVINCE = 0;
     public static final int LEVEL_CITY = 1;
     public static final int LEVEL_COUNTY = 2;
@@ -47,6 +51,12 @@ public class ChooseAreaActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if(defaultSharedPreferences.getBoolean("city_selected",false)){
+            Intent intent = new Intent(this, WeatherActivity.class);
+            startActivity(intent);
+            finish();
+        }
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_choose_area);
         listView = (ListView) findViewById(R.id.list_view);
@@ -54,9 +64,11 @@ public class ChooseAreaActivity extends AppCompatActivity {
         weatherNowDB = WeatherNowDB.getInstance(this);
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, dataList);
         listView.setAdapter(adapter);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                DebugLog.debugLog(TAG,"`````````````````"+currentLevel+"");
                 if (currentLevel == LEVEL_PROVINCE) {
                     selectProvince = provinceList.get(position);
                     Log.i(TAG, "onItemClick: "+selectProvince.getProvinceName());
@@ -64,7 +76,14 @@ public class ChooseAreaActivity extends AppCompatActivity {
                 } else if (currentLevel == LEVEL_CITY) {
                     selectCity = cityList.get(position);
                     queryCounties(selectCity);
+                }else if(currentLevel == LEVEL_COUNTY){
+                    String countyCode = countyList.get(position).getCounyCode();
+                    Intent intent = new Intent(ChooseAreaActivity.this, WeatherActivity.class);
+                    intent.putExtra("county_code",countyCode);
+                    startActivity(intent);
+                    finish();
                 }
+                DebugLog.debugLog(TAG,"`````````````````"+currentLevel+"");
             }
         });
         queryProvinces();
@@ -116,19 +135,22 @@ public class ChooseAreaActivity extends AppCompatActivity {
      * 查询全国所有的区，优先从数据库查询，如果没有查询到，再去服务器上查询
      * */
     public void queryCounties(City selectCity) {
+        DebugLog.debugLog(TAG,selectCity.toString());
         countyList = weatherNowDB.loadCounty(selectCity.getId());
+        DebugLog.debugLog(TAG,"11111111111111111");
+        DebugLog.debugLog(TAG,countyList.size()+"");
         if (countyList.size() > 0) {
             dataList.clear();
             for (County county : countyList) {
-                dataList.add(county.getCountryName());
+                dataList.add(county.getCountyName());
+                DebugLog.debugLog(TAG,county.toString());
             }
             adapter.notifyDataSetChanged();
             listView.setSelection(0);
             textView.setText(selectCity.getCityName());
             currentLevel = LEVEL_COUNTY;
-
         } else {
-            queryFromServer(null, "county");
+            queryFromServer(selectCity.getCityCode(), "county");
         }
     }
 
@@ -155,6 +177,7 @@ public class ChooseAreaActivity extends AppCompatActivity {
                     aBoolean = Utility.handleCityResponse(weatherNowDB, response, selectProvince.getId());
                     Log.i(TAG, "onFinish: "+aBoolean);
                 } else if ("county".equals(type)) {
+                    DebugLog.debugLog(TAG,"county");
                     aBoolean = Utility.handleCountyResponse(weatherNowDB, response, selectCity.getId());
                 }
                 if(aBoolean){

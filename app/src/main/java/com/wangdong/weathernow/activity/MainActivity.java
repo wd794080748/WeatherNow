@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Intent intent = new Intent(this,ChooseAreaActivity.class);
         startActivity(intent);
+        finish();
 //        HttpUtil.sendHttpRequest("http://www.weather.com.cn/data/list3/city.xml", new HttpCallbackListener() {
 //            @Override
 //            public void onFinish(String response) {

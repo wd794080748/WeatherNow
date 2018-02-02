@@ -121,8 +121,8 @@ public class WeatherNowDB {
     public void saveCounty(County county) {
         if (county != null) {
             ContentValues values = new ContentValues();
-            values.put("county_name", county.getCountryName());
-            values.put("county_code", county.getCountryCode());
+            values.put("county_name", county.getCountyName());
+            values.put("county_code", county.getCounyCode());
             values.put("city_id", county.getCityId());
             db.insert("County", null, values);
         }
@@ -134,14 +134,16 @@ public class WeatherNowDB {
     public List<County> loadCounty(int cityId) {
         ArrayList<County> countyList = new ArrayList<>();
         Cursor cursor = db.query("County", null, "city_id= ?", new String[]{String.valueOf(cityId)}, null, null, null);
-        do {
-            County county = new County();
-            county.setId(cursor.getInt(cursor.getColumnIndex("id")));
-            county.setCountryCode(cursor.getString(cursor.getColumnIndex("county_code")));
-            county.setCountryName(cursor.getString(cursor.getColumnIndex("county_name")));
-            county.setCityId(cityId);
-            countyList.add(county);
-        } while (cursor.moveToNext());
+        if (cursor.moveToFirst()) {
+            do {
+                County county = new County();
+                county.setId(cursor.getInt(cursor.getColumnIndex("id")));
+                county.setCountyCode(cursor.getString(cursor.getColumnIndex("county_code")));
+                county.setCountyName(cursor.getString(cursor.getColumnIndex("county_name")));
+                county.setCityId(cityId);
+                countyList.add(county);
+            } while (cursor.moveToNext());
+        }
         if (cursor != null) {
             cursor.close();
         }
