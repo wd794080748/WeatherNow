@@ -46,13 +46,15 @@ public class ChooseAreaActivity extends Activity {
     protected City selectCity;
     private List<County> countyList;
     public static final String TAG = "ChooseAreaActivity";
+    private  boolean from_weather_activity;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if(defaultSharedPreferences.getBoolean("city_selected",false)){
+      from_weather_activity = getIntent().getBooleanExtra("from_weather_activity", false);
+        if(defaultSharedPreferences.getBoolean("city_selected",false)&&!from_weather_activity){
             Intent intent = new Intent(this, WeatherActivity.class);
             startActivity(intent);
             finish();
@@ -78,6 +80,7 @@ public class ChooseAreaActivity extends Activity {
                     queryCounties(selectCity);
                 }else if(currentLevel == LEVEL_COUNTY){
                     String countyCode = countyList.get(position).getCounyCode();
+                    DebugLog.debugLog(TAG,"countyCode="+countyCode);
                     Intent intent = new Intent(ChooseAreaActivity.this, WeatherActivity.class);
                     intent.putExtra("county_code",countyCode);
                     startActivity(intent);
@@ -103,7 +106,7 @@ public class ChooseAreaActivity extends Activity {
             adapter.notifyDataSetChanged();
             listView.setSelection(0);
             textView.setText("中国");
-
+            currentLevel = LEVEL_PROVINCE;
         } else {
             queryFromServer(null, "province");
         }
@@ -211,4 +214,20 @@ runOnUiThread(new Runnable() {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        DebugLog.debugLog(TAG,from_weather_activity+"``````"+currentLevel);
+        if(currentLevel == LEVEL_COUNTY){
+            queryCities(selectProvince);
+        }else if(currentLevel == LEVEL_CITY){
+            queryProvinces();
+        }else {
+            DebugLog.debugLog(TAG,from_weather_activity+"");
+            if(from_weather_activity){
+                Intent intent =new Intent(this,WeatherActivity.class);
+                startActivity(intent);
+            }
+            finish();
+        }
+    }
 }
